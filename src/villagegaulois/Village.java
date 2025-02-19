@@ -8,9 +8,12 @@ public class Village {
 	private Chef chef;
 	private Gaulois[] villageois;
 	private int nbVillageois = 0;
+	private Marche marche;
+	
 
-	public Village(String nom, int nbVillageoisMaximum) {
+	public Village(String nom, int nbVillageoisMaximum, int nombreEtals) {
 		this.nom = nom;
+		this.marche = new Marche(nombreEtals);
 		villageois = new Gaulois[nbVillageoisMaximum];
 	}
 
@@ -56,6 +59,62 @@ public class Village {
 		}
 		return chaine.toString();
 	}
+	
+	public String installerVendeur(Gaulois vendeur, String produit, int nbProduit) {
+	    StringBuilder chaine = new StringBuilder();
+	    int indiceEtalLibre = marche.trouverEtalLibre();
+	    if (indiceEtalLibre != -1) {
+	        marche.utiliserEtal(indiceEtalLibre, vendeur, produit, nbProduit);
+	        chaine.append(vendeur.getNom()).append(" a installé son étal pour vendre ").append(nbProduit).append(" ").append(produit).append(".\n");
+	    } else {
+	        chaine.append("Désolé, il n'y a pas d'étal libre pour ").append(vendeur.getNom()).append(".\n");
+	    }
+	    return chaine.toString();
+	}
+	
+	public String rechercherVendeursProduit(String produit) {
+	    StringBuilder chaine = new StringBuilder();
+	    Etal[] etalsVendantProduit = marche.trouverEtals(produit);
+	    if (etalsVendantProduit.length > 0) {
+	        chaine.append("Les vendeurs vendant des ").append(produit).append(" sont :\n");
+	        for (Etal etal : etalsVendantProduit) {
+	            chaine.append("- ").append(etal.getVendeur().getNom()).append("\n");
+	        }
+	    } else {
+	        chaine.append("Aucun vendeur ne vend de ").append(produit).append(" pour le moment.\n");
+	    }
+	    return chaine.toString();
+	}
+	
+	
+	
+	
+	public Etal rechercherEtal(Gaulois vendeur) {
+	    return marche.trouverVendeur(vendeur);
+	}
+
+	
+	public String partirVendeur(Gaulois vendeur) {
+	    StringBuilder chaine = new StringBuilder();
+	    Etal etal = rechercherEtal(vendeur);
+	    if (etal != null) {
+	        chaine.append(marche.libererEtal(etal));  // La méthode `libererEtal` devra être ajoutée dans `Marche`
+	        chaine.append(vendeur.getNom()).append(" a quitté son étal.\n");
+	    } else {
+	        chaine.append(vendeur.getNom()).append(" n'a pas d'étal occupé.\n");
+	    }
+	    return chaine.toString();
+	}
+	
+	
+
+	
+	public String afficherMarche() {
+	    return marche.afficherMarche();
+	}
+	
+
+
 	//(1) Classe interne Marche
     public static class Marche {
         private Etal[] etals;
@@ -145,6 +204,17 @@ public class Village {
 
             return sb.toString();
         }
+        
+        public String libererEtal(Etal etal) {
+    	    StringBuilder chaine = new StringBuilder();
+    	    if (etal != null && etal.isEtalOccupe()) {
+    	        etal.libererEtal(); 
+    	        chaine.append("L'étal de ").append(etal.getVendeur().getNom()).append(" a été libéré.\n");
+    	    } else {
+    	        chaine.append("Cet étal n'est pas occupé.\n");
+    	    }
+    	    return chaine.toString();
+    	}
         
     }
 }

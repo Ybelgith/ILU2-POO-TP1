@@ -56,4 +56,95 @@ public class Village {
 		}
 		return chaine.toString();
 	}
+	//(1) Classe interne Marche
+    public static class Marche {
+        private Etal[] etals;
+      
+   
+        public Marche(int nombreEtals) { //construct
+            etals = new Etal[nombreEtals];
+            for (int i = 0; i < nombreEtals; i++) {
+                etals[i] = new Etal(); 
+            }
+        }
+        
+        void utiliserEtal(int indiceEtal, Gaulois vendeur,
+        		String produit, int nbProduit) {
+        	  if (indiceEtal >= 0 && indiceEtal < etals.length) {
+        	        Etal etal = etals[indiceEtal];
+        	        if (!etal.isEtalOccupe()) {
+        	            etal.occuperEtal(vendeur, produit, nbProduit);
+        	        } else {
+        	            System.out.println("L'étal est déjà occupé !");
+        	        }
+        	    } else {
+        	        System.out.println("Indice d'étal invalide !");
+        	    }
+        	}
+        
+        //4
+        int trouverEtalLibre() {
+        	for(int i = 0 ; i < etals.length; i++) {
+        		if(!etals[i].isEtalOccupe()) {
+        			return i;
+        		}
+        		}
+        	return -1;
+        	}
+        
+    
+        //5
+        public Etal[] trouverEtals(String produit) {
+          
+            int count = 0;
+            for (int i = 0; i < etals.length; i++) {
+                if (etals[i].contientProduit(produit)) {
+                    count++;
+                }
+            }
+
+         
+            Etal[] result = new Etal[count];
+            int index = 0;
+
+           
+            for (int i = 0; i < etals.length; i++) {
+                if (etals[i].contientProduit(produit)) {
+                    result[index++] = etals[i];
+                }
+            }
+
+            return result;
+        }
+        
+        //6
+        public Etal trouverVendeur(Gaulois gaulois) {
+            for (int i = 0; i < etals.length; i++) {
+                if (etals[i].getVendeur() != null && etals[i].getVendeur().equals(gaulois)) {
+                    return etals[i]; // Retourne l'étal où le vendeur est installé
+                }
+            }
+            return null; 
+        }
+        
+        //7
+        public String afficherMarche() {
+            StringBuilder sb = new StringBuilder();
+
+            int nbEtalVide = 0;
+            for (int i = 0; i < etals.length; i++) {
+                if (etals[i].isEtalOccupe()) {
+                    sb.append(etals[i].afficherEtal()); 
+                } else {
+                    nbEtalVide++;
+                }
+            }
+
+            
+            sb.append("Il reste ").append(nbEtalVide).append(" étals non utilisés dans le marché.\n");
+
+            return sb.toString();
+        }
+        
+    }
 }
